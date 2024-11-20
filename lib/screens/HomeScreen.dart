@@ -1,12 +1,82 @@
-import 'package:flutter/material.dart';
+import 'dart:ffi';
 
-class HomeScreen extends StatelessWidget {
+import 'package:clientguest/components/app_routes.dart';
+import 'package:clientguest/components/progressAPI.dart';
+import 'package:clientguest/controller/BillController.dart';
+import 'package:clientguest/controller/ConvertController.dart';
+import 'package:flutter/material.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String? token;
+  String? id;
+  String? email;
+  String? userName;
+  int? type;
+  String? cardId;
+  int? vehicleType;
+  int bill = 0;
+  Map<String, dynamic>? decodedToken;
+  bool isApiCallProcess = true;
+  BillController billController = BillController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('token');
+
+    if (token != null) {
+      print(token);
+      try {
+        Map<String, dynamic> decodedToken = Jwt.parseJwt(token!);
+        setState(() {
+          userName = decodedToken['user_name'] ?? 'Unknown User';
+          email = decodedToken['email'];
+          type = decodedToken['type'];
+          cardId = decodedToken['card_id'];
+          vehicleType = decodedToken['vehicle_type'];
+        });
+        _loadBill(decodedToken['card_id']);
+      } catch (e) {
+        print('Error decoding token: $e');
+        setState(() {
+          userName = 'Unknown User';
+        });
+      }
+    }
+
+    setState(() {
+      isApiCallProcess = false;
+    });
+  }
+
+  Future<void> _loadBill(id) async {
+    billController.getBill(id).then((val) {
+      setState(() {
+        bill = val["data"]["total"] ?? 0;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: ProgressAPI(
+        inAsyncCall: isApiCallProcess,
+        opacity: 0.3,
         child: Column(
           children: [
             // Header
@@ -23,22 +93,24 @@ class HomeScreen extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
+                      children: [
+                        const Text(
                           'Xin chào,',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey,
+                            color: Color(0xFF1a237e),
                           ),
                         ),
-                        Text(
-                          'Đinh Bá Việt Anh',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                          ),
-                        ),
+                        token == null
+                            ? const CircularProgressIndicator()
+                            : Text(
+                                userName!,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1a237e),
+                                ),
+                              ),
                       ],
                     ),
                   ),
@@ -58,6 +130,7 @@ class HomeScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      color: Color(0xFF1a237e)
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -110,6 +183,7 @@ class HomeScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      color: Color(0xFF1a237e)
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -129,32 +203,41 @@ class HomeScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        ListTile(
-                          title: const Text('Xe máy'),
-                          trailing: const Icon(Icons.chevron_right),
-                          contentPadding: EdgeInsets.zero,
-                        ),
+                        token == null
+                            ? const CircularProgressIndicator()
+                            : ListTile(
+                                title:
+                                    Text(vehicleType == 0 ? "Xe máy" : "Ô tô"),
+                                trailing: const Icon(Icons.chevron_right),
+                                contentPadding: EdgeInsets.zero,
+                              ),
                         const Divider(),
-                        const ListTile(
-                          title: Text('Biển kiểm soát'),
-                          trailing: Text('-'),
-                          contentPadding: EdgeInsets.zero,
-                        ),
+                        token == null
+                            ? const CircularProgressIndicator()
+                            : const ListTile(
+                                title: Text('Biển kiểm soát'),
+                                trailing: Text('-'),
+                                contentPadding: EdgeInsets.zero,
+                              ),
                         const Divider(),
-                        const ListTile(
-                          title: Text('Mã thẻ'),
-                          trailing: Text('a70d4143'),
-                          contentPadding: EdgeInsets.zero,
-                        ),
+                        token == null
+                            ? const CircularProgressIndicator()
+                            : ListTile(
+                                title: const Text('Mã thẻ'),
+                                trailing: Text(cardId ?? ""),
+                                contentPadding: EdgeInsets.zero,
+                              ),
                         const Divider(),
-                        ListTile(
-                          title: const Text('Trạng thái'),
-                          trailing: Text(
-                            'Ngoài trường',
-                            style: TextStyle(color: Colors.red[400]),
-                          ),
-                          contentPadding: EdgeInsets.zero,
-                        ),
+                        token == null
+                            ? const CircularProgressIndicator()
+                            : ListTile(
+                                title: const Text('Trạng thái'),
+                                trailing: Text(
+                                  'Ngoài trường',
+                                  style: TextStyle(color: Colors.red[400]),
+                                ),
+                                contentPadding: EdgeInsets.zero,
+                              ),
                       ],
                     ),
                   ),
@@ -168,15 +251,25 @@ class HomeScreen extends StatelessWidget {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const ListTile(
+                    child: ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text(
+                      title: const Text(
                         'Thanh toán hóa đơn',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Color(0xFF1a237e)
+                        ),
                       ),
-                      trailing: Icon(Icons.chevron_right),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.chevron_right),
+                        onPressed: () {
+                          Navigator.pushNamed(context, Routes.payment);
+                        },
+                      ),
                     ),
                   ),
+
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -193,16 +286,17 @@ class HomeScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        const ListTile(
+                        ListTile(
                           title: Text('Mã thẻ'),
-                          trailing: Text('a70d4143'),
+                          trailing: Text(cardId ?? ""),
                           contentPadding: EdgeInsets.zero,
                         ),
                         const Divider(),
                         ListTile(
                           title: const Text('Dư nợ'),
                           trailing: Text(
-                            '79.000đ',
+                            currencyFormatter.format(bill ?? 0),
+                            // Hiển thị số tiền đã định dạng
                             style: TextStyle(color: Colors.red[400]),
                           ),
                           contentPadding: EdgeInsets.zero,

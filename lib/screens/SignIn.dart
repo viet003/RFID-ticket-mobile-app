@@ -49,7 +49,7 @@ class _SignInState extends State<SignIn> {
         if (val.token.isNotEmpty) {
           try {
             // Decode JWT Token
-            Map<String, dynamic> decodedToken = Jwt.parseJwt(val.token);
+            // Map<String, dynamic> decodedToken = Jwt.parseJwt(val.token);
 
             // Lưu token vào SharedPreferences
             final prefs = await SharedPreferences.getInstance();

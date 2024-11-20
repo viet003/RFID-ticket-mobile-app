@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "243171062366",
+    "project_id": "iot-messing",
+    "storage_bucket": "iot-messing.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:243171062366:android:25f7ef4c17de439ce53acf",
+        "android_client_info": {
+          "package_name": "com.example.clientguest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfDCwU4VgcYa-pS43kqMSp55w6w-b8Hls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,5 @@
 import 'package:clientguest/screens/HomePage.dart';
+import 'package:clientguest/screens/PaymentScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:clientguest/screens/SignIn.dart';
 import 'package:clientguest/screens/HomeScreen.dart';
@@ -35,11 +36,11 @@ class RouteGenerator {
         NotificationScreen(),
         settings: settings,
       );
-    // case Routes.checkorder:
-    //   return buildRoute(
-    //     CheckOrder(),
-    //     settings: settings,
-    //   );
+    case Routes.payment:
+      return buildRoute(
+        PaymentScreen(),
+        settings: settings,
+      );
     // case Routes.user:
     //   return buildRoute(
     //     User(),

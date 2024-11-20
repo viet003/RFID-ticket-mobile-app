@@ -5,4 +5,5 @@ class Routes {
   static const setting = '/setting';
   static const profile = '/profile';
   static const notification = '/notification';
+  static const payment = '/payment';
 }

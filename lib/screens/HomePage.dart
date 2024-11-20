@@ -54,19 +54,19 @@ class _HomePageState extends State<HomePage> {
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home_outlined),
-                label: 'Home',
+                label: 'Trang chủ',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.notifications_on_outlined),
-                label: 'Favourite',
+                label: 'Thông báo',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings_outlined),
-                label: 'Settings',
+                label: 'Cài đặt',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person_outline),
-                label: 'Profile',
+                label: 'Thông tin',
               ),
             ],
           ),
