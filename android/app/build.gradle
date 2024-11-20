@@ -3,11 +3,12 @@ plugins {
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services" // For Firebase services integration
 }
 
 android {
     namespace = "com.example.clientguest"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
     ndkVersion "25.1.8937393"
 
     compileOptions {
@@ -16,29 +17,44 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = 17
+        jvmTarget = "17"
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // Specify your unique Application ID.
+        // More info: https://developer.android.com/studio/build/application-id.html
         applicationId = "com.example.clientguest"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+
+        // Configure SDK versions.
+        minSdk = 21
+        //noinspection EditedTargetSdkVersion
+        targetSdk = 34
+
+        // Application version details.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Add signing configurations for release builds if needed.
+            // For now, using debug keys to allow `flutter run --release`.
             signingConfig = signingConfigs.debug
         }
     }
 }
 
 flutter {
-    source = "../.."
+    source = "../.." // Specifies the Flutter project directory.
+}
+
+dependencies {
+    // Use the Firebase BoM (Bill of Materials) to align Firebase dependencies' versions.
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+
+    // Firebase Analytics library.
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Add other Firebase services or dependencies as needed.
+    // Example: implementation("com.google.firebase:firebase-auth")
 }

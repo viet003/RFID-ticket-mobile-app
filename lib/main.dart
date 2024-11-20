@@ -1,19 +1,44 @@
 import 'package:clientguest/components/app_routes.dart';
 import 'package:clientguest/components/route_generator.dart';
+import 'package:clientguest/controller/FireBase_Api.dart';
 import 'package:clientguest/screens/SignIn.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'dart:io';
 
-void main() {
-  SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle.dark.copyWith(
-      statusBarColor: Colors.white, // Color for Android
-      statusBarBrightness:
-      Brightness.dark, // Dark == white status bar -- for IOS.
-    ),
-  );
+// void createDefaultNotificationChannel() {
+//   if (Platform.isAndroid) {
+//     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//     FlutterLocalNotificationsPlugin();
+//
+//     const AndroidNotificationChannel channel = AndroidNotificationChannel(
+//       'default_channel', // ID của kênh
+//       'Thông báo mặc định', // Tên kênh (hiển thị cho người dùng)
+//       description: 'Kênh thông báo mặc định cho ứng dụng', // Mô tả kênh
+//       importance: Importance.high, // Mức độ ưu tiên
+//     );
+//
+//     flutterLocalNotificationsPlugin
+//         .resolvePlatformSpecificImplementation<
+//         AndroidFlutterLocalNotificationsPlugin>()
+//         ?.createNotificationChannel(channel);
+//   }
+// }
+
+void main() async {
+  // Ensure that Flutter engine is initialized before using Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
+
+  // Initialize Firebase Notifications
+  await FirebaseApi().initNotifications();
+  // createDefaultNotificationChannel();
+  // Run the app
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
