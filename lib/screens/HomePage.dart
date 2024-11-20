@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.favorite_border_outlined),
+                icon: Icon(Icons.notifications_on_outlined),
                 label: 'Favourite',
               ),
               BottomNavigationBarItem(

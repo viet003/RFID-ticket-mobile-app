@@ -4,6 +4,7 @@ import 'package:clientguest/controller/Store.dart';
 import 'package:clientguest/models/SignInModel.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -35,30 +36,40 @@ class _SignInState extends State<SignIn> {
       setState(() {
         isApiCallProcess = true;
       });
+
       sir.email = _emailController.text;
       sir.password = _passwordController.text;
 
       SignInController sic = SignInController();
-      sic.SignIn(sir).then((val) {
+      sic.SignIn(sir).then((val) async {
         setState(() {
           isApiCallProcess = false;
         });
 
         if (val.token.isNotEmpty) {
           try {
+            // Decode JWT Token
             Map<String, dynamic> decodedToken = Jwt.parseJwt(val.token);
-            Store save = Store();
-            save.saveToken(val);
+
+            // Lưu token vào SharedPreferences
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('token', val.token);
+            await prefs.setString('email', sir.email);
+
+            print('Token saved successfully.');
+
+            // Điều hướng tới màn hình chính
             Navigator.pushNamed(context, Routes.home);
-            // Navigate to the next screen or dashboard
           } catch (e) {
             print('Error decoding token: $e');
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Lỗi trong quá trình xử lý token.')),
+            );
           }
         } else {
           print('Invalid token received.');
-          // Display an error message to the user
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Đăng nhập thất bại. Vui lòng thử lại!!')),
+            const SnackBar(content: Text('Đăng nhập thất bại. Vui lòng thử lại!!')),
           );
         }
       }).catchError((error) {
@@ -67,17 +78,18 @@ class _SignInState extends State<SignIn> {
         });
         print('Error during sign-in: $error');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('An error occurred. Please try again later.')),
+          const SnackBar(content: Text('Đã xảy ra lỗi. Vui lòng thử lại sau.')),
         );
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content:
-            Text('Vui lòng hoàn thành thông tin và chấp nhận điều khoản.')),
+        const SnackBar(
+          content: Text('Vui lòng hoàn thành thông tin và chấp nhận điều khoản.'),
+        ),
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

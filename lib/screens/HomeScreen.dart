@@ -104,7 +104,7 @@ class HomeScreen extends StatelessWidget {
                   ),
 
                   // Transportation Section
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 15),
                   const Text(
                     'Phương tiện',
                     style: TextStyle(
@@ -117,7 +117,15 @@ class HomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 4,
+                          blurRadius: 6,
+                          offset: const Offset(0, 3), // Shadow position
+                        ),
+                      ],
                     ),
                     child: Column(
                       children: [
@@ -154,7 +162,8 @@ class HomeScreen extends StatelessWidget {
                   // Payment Section
                   const SizedBox(height: 16),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
@@ -163,9 +172,42 @@ class HomeScreen extends StatelessWidget {
                       contentPadding: EdgeInsets.zero,
                       title: Text(
                         'Thanh toán hóa đơn',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                       trailing: Icon(Icons.chevron_right),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 4,
+                          blurRadius: 6,
+                          offset: const Offset(0, 3), // Shadow position
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        const ListTile(
+                          title: Text('Mã thẻ'),
+                          trailing: Text('a70d4143'),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        const Divider(),
+                        ListTile(
+                          title: const Text('Dư nợ'),
+                          trailing: Text(
+                            '79.000đ',
+                            style: TextStyle(color: Colors.red[400]),
+                          ),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ],
                     ),
                   ),
                 ],
