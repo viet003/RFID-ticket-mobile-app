@@ -63,16 +63,24 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> _loadBill(id) async {
-    billController.getBill(id).then((val) {
-      if (val["data"]["total"] != null) {
+  Future<void> _loadBill(String id) async {
+    try {
+      final val = await billController.getBill(id);
+      if (val != null && val["data"] != null && val["data"]["total"] != null) {
         setState(() {
           bill = val["data"]["total"] ?? 0;
         });
-        return;
+      } else {
+        setState(() {
+          bill = 0;
+        });
       }
-      bill = 0;
-    });
+    } catch (e) {
+      print('Error loading bill: $e');
+      setState(() {
+        bill = 0; // Đặt giá trị mặc định
+      });
+    }
   }
 
   @override
