@@ -1,21 +1,37 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FirebaseApi {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   /// Initialize notifications
   Future<void> initNotifications() async {
-    // Request notification permissions
-    await _firebaseMessaging.requestPermission();
+    try {
+      // Request notification permissions
+      NotificationSettings settings = await _firebaseMessaging.requestPermission();
+      if (settings.authorizationStatus == AuthorizationStatus.denied) {
+        print('Notification permissions denied');
+        return;
+      }
 
-    // Fetch the FCM token
-    final String? fCMToken = await _firebaseMessaging.getToken();
+      // Fetch the FCM token
+      final String? fCMToken = await _firebaseMessaging.getToken();
+      if (fCMToken == null) {
+        print('Failed to fetch FCM Token');
+        return;
+      }
 
-    // Print the FCM token to the console
-    print('FCM Token: $fCMToken');
+      // Save the FCM token to SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token_device', fCMToken);
+      print('FCM Token saved to SharedPreferences: $fCMToken');
 
-    // Register the top-level background message handler
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+      // Register the top-level background message handler
+      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    } catch (e) {
+      // Handle unexpected errors
+      print('Error initializing notifications: $e');
+    }
   }
 }
 

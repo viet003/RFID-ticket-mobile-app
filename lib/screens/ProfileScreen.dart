@@ -28,7 +28,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       // Xóa thông tin lưu trữ từ SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      await prefs.clear(); // Hoặc chỉ xóa các giá trị cụ thể như token
+      // Xóa các trường cụ thể
+      await prefs.remove('token'); // Xóa trường token
+      await prefs.remove('email'); // Xóa một trường khác
       print('User logged out successfully.');
 
       // Điều hướng về màn hình đăng nhập

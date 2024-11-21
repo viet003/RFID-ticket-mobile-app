@@ -65,9 +65,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadBill(id) async {
     billController.getBill(id).then((val) {
-      setState(() {
-        bill = val["data"]["total"] ?? 0;
-      });
+      if (val["data"]["total"] != null) {
+        setState(() {
+          bill = val["data"]["total"] ?? 0;
+        });
+        return;
+      }
+      bill = 0;
     });
   }
 
@@ -128,10 +132,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Text(
                     'Học tập',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1a237e)
-                    ),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1a237e)),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -181,10 +184,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Text(
                     'Phương tiện',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1a237e)
-                    ),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1a237e)),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -256,10 +258,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: const Text(
                         'Thanh toán hóa đơn',
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Color(0xFF1a237e)
-                        ),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Color(0xFF1a237e)),
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.chevron_right),

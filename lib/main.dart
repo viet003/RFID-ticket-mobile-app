@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: SignIn(),
-      initialRoute: Routes.home,
+      initialRoute: Routes.welcome,
       onGenerateRoute: RouteGenerator.generateRoute,
     );
   }

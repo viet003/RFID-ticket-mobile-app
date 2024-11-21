@@ -18,12 +18,61 @@ class _SignInState extends State<SignIn> {
   final _passwordController = TextEditingController();
   bool isApiCallProcess = false;
   late SignInModelRequest sir = SignInModelRequest();
+  String? token;
+  SignInController signInController = SignInController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadToken();
+  }
+
+  Future<void> logout(BuildContext context) async {
+    try {
+      // Xóa thông tin lưu trữ từ SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('token'); // Xóa trường token
+      await prefs.remove('email'); // Xóa một trường khác
+      print('User logged out successfully.');
+
+      // Điều hướng về màn hình đăng nhập
+      Navigator.pushNamedAndRemoveUntil(
+          context, Routes.welcome, (route) => false);
+    } catch (e) {
+      print('Error during logout: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Đã xảy ra lỗi trong quá trình đăng xuất.')),
+      );
+    }
+  }
+
+  Future<void> _checkToken(token) async {
+    signInController.checkTokenExpired(token).then((val) {
+      if(val['isExpired']) {
+        logout(context);
+      } else {
+        Navigator.pushNamed(context, Routes.home);
+      }
+    });
+  }
+
+  Future<void> _loadToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('token');
+    if (token != null) {
+      await _checkToken(token);
+    }
+    setState(() {
+      isApiCallProcess = false;
+    });
   }
 
   void clearText() {
@@ -39,23 +88,20 @@ class _SignInState extends State<SignIn> {
 
       sir.email = _emailController.text;
       sir.password = _passwordController.text;
-
-      SignInController sic = SignInController();
-      sic.SignIn(sir).then((val) async {
+      signInController.SignIn(sir).then((val) async {
         setState(() {
           isApiCallProcess = false;
         });
 
         if (val.token.isNotEmpty) {
           try {
-            // Decode JWT Token
-            // Map<String, dynamic> decodedToken = Jwt.parseJwt(val.token);
-
             // Lưu token vào SharedPreferences
             final prefs = await SharedPreferences.getInstance();
             await prefs.setString('token', val.token);
             await prefs.setString('email', sir.email);
-
+            var token_device = await prefs.getString('token_device');
+            print(token_device);
+            signInController.updateTokenDevice(token_device, sir.email);
             print('Token saved successfully.');
 
             // Điều hướng tới màn hình chính
